@@ -25,15 +25,18 @@ namespace LatexToPdf
             File.WriteAllText(latexFilePath, latexBody);
 
             // Convert via pdflatex
-            ProcessStartInfo startInfo = new ProcessStartInfo("pdflatex", "-halt-on-error " + latexFilePath){
+            ProcessStartInfo startInfo = new ProcessStartInfo("xelatex", "-halt-on-error " + latexFilePath)
+            {
                 WorkingDirectory = tempDir,
             };
 
 
-            using(var runningProcess = Process.Start(startInfo)){
+            using (var runningProcess = Process.Start(startInfo))
+            {
                 log.LogInformation("Starting conversion");
                 runningProcess.WaitForExit();
-                if (runningProcess.ExitCode != 0){
+                if (runningProcess.ExitCode != 0)
+                {
                     log.LogError("Error rendering pdf", runningProcess.StandardOutput);
                     return new BadRequestObjectResult("Error in processing");
                 }
@@ -42,9 +45,18 @@ namespace LatexToPdf
 
 
             var stream = File.OpenRead(pdfFilePath);
-            return new FileStreamResult(stream,"application/octet-stream"){
+            return new FileStreamResult(stream, "application/octet-stream")
+            {
                 FileDownloadName = "output.pdf"
             };
+        }
+        [FunctionName("GetFonts")]
+        public static async Task<IActionResult> GetFonts(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
+            ILogger log)
+        {
+            var stream = new FileStream(Path.Join(Environment.GetEnvironmentVariable("HOME"), "site/wwwroot/fonts.json"),FileMode.Open);
+            return new FileStreamResult(stream, "application/json");
         }
         public static string CreateTempFolder()
         {
