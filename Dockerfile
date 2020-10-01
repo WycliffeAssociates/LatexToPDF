@@ -10,7 +10,7 @@ FROM mcr.microsoft.com/azure-functions/dotnet:2.0
 ENV AzureWebJobsScriptRoot=/home/site/wwwroot \
     AzureFunctionsJobHost__Logging__Console__IsEnabled=true
 
-RUN apt-get update && apt-get install -y texlive-xetex wget unzip fonts-noto\
+RUN apt-get update && apt-get install -y texlive-xetex wget unzip texlive-lang-arabic fonts-noto\
 && mkdir -p /opt/fontindexer\
 && wget https://github.com/WycliffeAssociates/FontIndexer/releases/download/1.0.1/linux-x64.zip -O /opt/fontindexer/linux-x64.zip\
 && unzip /opt/fontindexer/linux-x64.zip -d /opt/fontindexer/\
